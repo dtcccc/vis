@@ -1,8 +1,8 @@
 var v3 = new view3();
 function view3() {
-    this.width = innerWidth - 100; //宽
-    this.height = innerHeight - 100; //长
-    this.radius = innerHeight / 4 - 100; //圆半径
+    this.width = (innerHeight - 100) / 2 * 0.9; //宽
+    this.height = (innerHeight - 100) / 2 * 0.9; //长
+    this.radius = (innerHeight - 100) / 4 * 0.45; //圆半径
     this.color = d3.scale.category20();
     this.color1 = ["blue", "red", "yellow", "green", "grey", "purple", "chocolate"];
     this.time = new Date();//时间

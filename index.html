@@ -44,11 +44,11 @@
         </svg>
     </div>
 
-    <div id="view1">
+    <div id="view1" style="position: absolute;">
         <svg class="canvas"></svg>
     </div>
 
-    <div id="view2">
+    <div id="view2" style="position: absolute;">
         <div id="ip">
             <span id="dip">dip</span>
             <span id="num" style="float:right">num</span>
@@ -58,7 +58,7 @@
             <button id="top">top</button>
         </div>
 
-        <div id="port">
+        <div id="port" style="position: absolute;">
             <span id="dport">dport</span>
             <span id="pnum" style="float:right">num</span>
             <div id="view22"></div>
@@ -66,9 +66,27 @@
         </div>
     </div>
 
-    <div id="view3"></div>
+    <div id="view3" style="position: absolute;"></div>
 
     <script src="js/d3.js" charset="utf-8"></script>
+    <script>
+        var onResize = function() {
+            console.log(document.body.clientWidth);
+            console.log(document.body.clientHeight);
+        }
+        window.addEventListener("resize", onResize, true);
+
+        d3.select("#view1")
+            .style("left", 10)
+            .style("top", 10);
+        d3.select("#view2")
+            .style("left", (innerHeight - 100) / 2 * 1.1 + 10)
+            .style("top", 10);
+        d3.select("#view3")
+            .style("left", 10)
+            .style("top", (innerHeight - 100) / 2 + 10)
+    </script>
+
     <script src="js/utils.js" charset="utf-8"></script>
 
     <script src="js/slider.js" charset="utf-8"></script>
