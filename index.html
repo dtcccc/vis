@@ -1,305 +1,86 @@
+<html>
 
-<html>  
-  <head>  
-        <meta charset="utf-8">  
-<style>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+        
+        .axis text {
+            font-family: sans-serif;
+            font-size: 5px;
+        }
+        
+        span {
+            font-size: 30px;
+        }
+        
+        #view3 circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 0.5px;
+        }
+        
+        #view3 .light circle {
+            stroke-width: 10px;
+        }
+        
+        #view3 .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 0.8px;
+        }
+    </style>
+</head>
 
-circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 0.5px;
-}
-
-.light circle{
-	stroke-width: 10px;
-}
-
-.link {
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 0.8px;
-}
-
-</style>
-  </head> 
 <body>
-<script src="d3.js"></script>
-<h3 id="time"></h3>
-<button id="next">next</button>
-<script>
+    <div id="slider">
+        <svg class="sliderCanvas" style="position: absolute;">
+            <rect class="slider" x="20" y="20" width="760" height="60" style="stroke: #000000; fill: #ffffff"></rect>
+        </svg>
+    </div>
 
-var width = innerWidth-100,
-    height = innerHeight-100,
-	radius = innerHeight/4-100,
-	color = d3.scale.category20(),
-	color1=["blue","red","yellow","green","grey"],
-	time, //当前时间
-	pt=0, //data的指针
-	data={}, //按ip分类整理的data数据
-	dataset, //data原始数据
-	st={},ed={}, //每个ip的9格查找范围记录，辅助用
-	showtable={}; //标记显示区块
+    <div id="view1">
+        <svg class="canvas"></svg>
+    </div>
+
+    <div id="view2">
+        <div id="ip">
+            <span id="dip">dip</span>
+            <span id="num" style="float:right">num</span>
+            <div id="view21"></div>
+            <span id="sip" style="float:right">sip</span>
+            <button id="back">back</button>
+            <button id="top">top</button>
+        </div>
+
+        <div id="port">
+            <span id="dport">dport</span>
+            <span id="pnum" style="float:right">num</span>
+            <div id="view22"></div>
+            <span id="sport" style="float:right">sport</span>
+        </div>
+    </div>
+
+    <div id="view3"></div>
+
+    <script src="js/d3.js" charset="utf-8"></script>
+    <script src="js/utils.js" charset="utf-8"></script>
+
+    <script src="js/slider.js" charset="utf-8"></script>
+
+
+    <script src="js/view1.js" charset="utf-8"></script>
+    <script src="js/view2.js" charset="utf-8"></script>
+    <script src="js/view3.js" charset="utf-8"></script>
+
+</body>
 
 
 
-d3.json("server.php", function(error, root) {
-console.log(root);
-	draw_server(root);
-		
-	d3.json("circle.php?n=100", function(error, root) {
-		draw_circle(root);
-		draw_big_circle();
-		d3.tsv("data.tsv",function(error, root) {
-			dataset=root;
-			main();
-		});
-	});
-});
-function draw_server(root){ //画出服务器的树状图表示
-	var tree = d3.layout.tree()
-				.size([width/2, height/4]);
 
-	var diagonal = d3.svg.diagonal.radial()
-					.projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
-
-	var svg = d3.select("body").append("svg")
-				.attr("width", width)
-				.attr("height", height)
-				.attr("class","main")
-				.append("g")
-				.attr("transform", "translate("+width/2+","+height/2+")");
-	var nodes = tree.nodes(root);
-	var links = tree.links(nodes);
-
-	var link = svg.selectAll(".link")
-					.data(links)
-					.enter()
-					.append("path")
-					.attr("class", "link")
-					.attr("d", diagonal);
-
-	var node = svg.selectAll(".node")
-					.data(nodes)
-					.enter()
-					.append("g")
-					.attr("class", function(d) { return "i" + d.name })
-					.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-
-	node.append("circle")
-      .attr("r", 2);
-}
-function draw_circle(root){ //画出外圈
-	var svg = d3.select(".main")
-				.append("g")
-				.attr("class","circle")
-				.attr("transform", "translate("+width/2+","+height/2+")");
-	var partition = d3.layout.partition()
-				.sort(null)
-				.size([2 * Math.PI, radius * radius])
-				.value(function(d) { return 1; });
-				
-	var arc = d3.svg.arc()
-			.startAngle(function(d) { return d.x; })
-			.endAngle(function(d) { return d.x + d.dx; })
-			.innerRadius(function(d) { return Math.sqrt(d.y)+height/4; })
-			.outerRadius(function(d) { return Math.sqrt(d.y + d.dy)+height/4; });
-
-	var nodes = partition.nodes(root);
-	var links = partition.links(nodes);
-	console.log(nodes);
-	var arcs = svg.selectAll("g")
-				  .data(nodes)
-				  .enter().append("g");
-	
-	arcs.append("path")
-		.attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
-		.attr("d", arc)
-		.style("stroke", "#000")
-		.style("fill", "#fff" )
-		.attr("class",function(d,i){return ((i<=52*9?"http":i<=69*9?"others":i<=81*9?"ftp_control":i<=93*9?"mysql":"redis")+(d.name?(" c"+d.name):""))})
-		.on("mouseover",function(d,i){
-			d3.select(this)
-				.style("fill",function(){return color1[(i<=52*9?0:i<=69*9?4:i<=81*9?1:i<=93*9?2:3)]});
-		})
-		.on("mouseout",function(d){
-			if(!d3.select(this).classed("light"))
-			d3.select(this)
-				.transition()
-				.duration(200)
-				.style("fill","#fff");
-		});
-}		
-function draw_big_circle(){ //画出最外圈，用于标识
-	var pie = d3.layout.pie(),
-	piedata = pie([52,12,12,7,17]),
-	text=["http","ftp_control","mysql","redis","others"],
-	arc = d3.svg.arc()  //弧生成器
-    .innerRadius(height*0.45)   //设置内半径
-    .outerRadius(height*0.5),  //设置外半径
-	svg = d3.select(".main").append("g");
-	var arcs = svg.selectAll("g")
-				.data(piedata)
-				.enter()
-				.append("g")
-				.attr("transform","translate("+ (width/2) +","+ (height/2) +")");
-	arcs.append("path")
-    .attr("fill",function(d,i){
-        return color1[i];
-    })
-    .attr("d",function(d){
-        return arc(d);   //调用弧生成器，得到路径值
-    })
-	.attr("class","waiquan");
-	arcs.append("text")
-    .attr("transform",function(d){
-        return "translate(" + arc.centroid(d) + ")";
-    })
-    .attr("text-anchor","middle")
-    .text(function(d,i){
-        return text[i];
-    });
-}
-function main(){ //主程序，处理数据，画图
-	var l=dataset.length,i,t;
-	time=new Date(dataset[0]["time"]);
-	time.setTime(time.getTime()-1000);
-	for(i=0;i<l;++i){
-		t=dataset[i];
-		if(!data[t.sip]){
-			data[t.sip]=[t];
-			st[t.sip]=0;
-			ed[t.sip]=1;
-		}
-		else data[t.sip].push(t);
-	}
-	console.log(data);
-	d3.select("#time").text(time);
-	d3.select("#next").on("click",next);
-}
-function next(){ //进入下一个周期
-	var temp,i,j,t;
-	showtable={}; //初始化显示列表
-	
-	d3.select(".line").remove(); //清除前一次
-	d3.selectAll(".light").classed("light",false)
-						.style("fill","#fff");
-	
-	
-	time.setTime(time.getTime()+1000*60*5); //前进5分钟
-	for(;;++pt){
-		temp=new Date(dataset[pt]["time"]);
-		if(temp<=time){
-			if(!showtable[dataset[pt]["sip"]])
-				showtable[dataset[pt]["sip"]]=[1,0,0,0,0,0,0,0,0];
-		}
-		else break;
-	}
-	t=new Date();
-	t.setTime(time.getTime()-1000*60*5*9); //回溯到9个5分钟之前
-	for(i in showtable){
-		for(;st[i]<data[i].length-1;++st[i]){
-			temp=new Date(data[i][st[i]]["time"]);
-			if(temp>t) break;
-		}
-		if(ed[i]<=st[i]) ed[i]=st[i]+1;
-		for(;ed[i]<data[i].length;++ed[i]){
-			temp=new Date(data[i][ed[i]]["time"]);
-			if(temp>time) break;
-		}
-		for(j=st[i];j<ed[i];++j){
-			temp=new Date(data[i][j]["time"]);
-			showtable[i][Math.floor((time-temp)/1000/60/5)]=1; //历史回溯的哪一格点亮
-		}
-	}
-	console.log(showtable);
-	d3.select("#time").text(time);
-	
-	//数据准备完毕，开始作图
-	var svg=d3.select(".main")
-					.append("g")
-					.attr("class","line"),
-		ci=d3.selectAll(".circle").node().children;
-	for(i in showtable){
-		temp=data[i][ed[i]-1];
-		var arr=[],ast,al,source,target,l1,l2,c;
-		switch(temp["protocol"]){
-			case "http": 
-				ast=1;
-				al=52;
-				c=0;
-				break;
-			case "ftp_control":
-				ast=70;
-				al=12;
-				c=1;
-				break;
-			case "mysql":
-				ast=82;
-				al=12;
-				c=2;
-				break;
-			case "redis":
-				ast=94;
-				al=7;
-				c=3;
-				break;
-			default:
-				ast=53;
-				al=17;
-				c=4;
-		}
-		for(j=0;j<al;++j)arr[j]=j+ast;
-		arr.sort(function(){ return 0.5 - Math.random() });
-		for(j=0;j<al;++j)
-			if(!d3.select(".c"+arr[j]).classed("light")) break;
-		j=arr[j];
-		target=d3.select(".c"+j);
-		source=document.getElementsByClassName("i"+i)[0];
-		l1=server_position(source.getAttribute("transform"));
-		l2=circle_position(target.attr("d"));
-		svg.append("path")
-			.attr("d","M"+l1.join()+"L"+l2.join()+"Z")
-			.attr("transform","translate("+ (width/2) +","+ (height/2) +")")
-			.style("stroke-width",2)
-			.style("stroke",color1[c]);
-		d3.select(source).classed("light",true);	
-		target.classed("light",true)
-			.style("fill",color1[c]);
-		for(t=1;t<9;++t)
-			if(showtable[i][t]){
-				temp=d3.select(ci[j*9+t-8].firstChild);
-				temp.classed("light",true)
-					.style("fill",color1[c]);
-			}
-			
-			
-			
-			
-	}
-		
-			
-	
-	
-}
-function circle_position(d){ //通过path的d属性计算circle中心位置
-	var t,t1,xy1,xy2,r;
-	t=d.indexOf("A");
-	xy1=d.substring(1,t).split(",");
-	t=d.indexOf("L")+1;
-	t1=d.lastIndexOf("A");
-	xy2=d.substring(t,t1).split(",");
-	r=[(parseFloat(xy1[0])+parseFloat(xy2[0]))/2,(parseFloat(xy1[1])+parseFloat(xy2[1]))/2];
-	return r;
-}
-function server_position(d){ //通过transform属性计算server位置
-	var t,r,l;
-	t=d.indexOf(")");
-	r=parseFloat(d.substring(7,t));
-	t=d.lastIndexOf("(")+1;
-	l=parseFloat(d.substring(t));
-	return [l*Math.cos(r*Math.PI/180),l*Math.sin(r*Math.PI/180)];
-}
-</script>
-		
-    </body>  
-</html>  
+</html>
