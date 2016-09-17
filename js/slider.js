@@ -2,10 +2,10 @@ var slider = new Slider();
 
 function Slider() {
     var svgSlider = d3.select(".sliderCanvas");
-    var width = 800;
+    var width = innerWidth * 0.9;
     var height = 100;
-    var x = 820;
-    var y = 150;
+    var x = innerWidth * 0.05;
+    var y = innerHeight - 120;
 
     var minTime = 1462238086;
     var maxTime = minTime;
@@ -33,6 +33,10 @@ function Slider() {
         .style("position", "absolute")
         .style("left", x + "px")
         .style("top", y + "px");
+    d3.select(".slider").attr("width", width - 40)
+        .attr("height", height - 40)
+        .attr("x", 20)
+        .attr("y", 20);
 
 
     function redraw() {

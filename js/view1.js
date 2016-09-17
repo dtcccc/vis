@@ -2,9 +2,10 @@ var v1 = new view1();
 
 function view1() {
     // View vars
-    var width = 800,
-        height = 800;
+    var width, height;
 
+    width = height = (innerHeight - 100) / 2 * 0.9;
+    
     var scale = 1;
 
     var color = d3.scale.category10();
@@ -69,7 +70,7 @@ function view1() {
         //svgG.selectAll(".node")
         //    .attr("stroke-opacity", 0.1)
         //    .attr("fill-opacity", 0.1);
-
+        console.log(d);
         svgG.selectAll(".link")
             .filter(function (n) {
                 if (currentEdgeSourceTable.hasOwnProperty(nodes[d].id)) {
@@ -96,9 +97,11 @@ function view1() {
             .duration(250)
             .attr("stroke-opacity", 0.1)
             .attr("fill-opacity", 0.1);
-
-
     }
+
+    this.selectNode = mouseover;
+    this.deselectNode = mouseleave;
+    
 
     function mouseleave(d) {
         svgG.selectAll(".link")
