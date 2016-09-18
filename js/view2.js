@@ -15,7 +15,7 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
     this.port = []; //端口筛选值，[sport,dport]
     this.callback = [];
     var w = (innerWidth - (innerHeight - 100) / 2) * 0.9, //宽
-        h = innerHeight / 2 * 0.9 - 50, //长
+        h = innerHeight / 2 * 0.9 - 100, //长
         padding = w / 20, //边距
         i, j, value, chosen = [];
     this.svg = d3.select("#view21") //ip视图的svg

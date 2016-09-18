@@ -41,8 +41,8 @@ function view1() {
     var maxTime = minTime;
     var startTime = minTime;
     var endTime = minTime + 50;
-    var lastStartTime = startTime;
-    var lastEndTime = endTime;
+    var lastStartTime = 0;
+    var lastEndTime = 0;
     var transitions = 0;
 
     var redrawNet = function () { };
@@ -115,7 +115,7 @@ function view1() {
             .attr("fill-opacity", 0.9 + 0.1 / 16 * scale);
     }
 
-    this.fresh = function (start, end) {
+    function redrawNetwork(start, end) {
         transitions = 0;
         startTime = start;
         endTime = end;
@@ -395,7 +395,7 @@ function view1() {
         lastEndTime = end;
 
     }
-
+    this.fresh = redrawNetwork;
     function zoom() {
         svgG.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
         scale = d3.event.scale;
@@ -471,54 +471,7 @@ function view1() {
 
                     slider.SetTime(minTime, maxTime, startTime, endTime);
 
-                    var timeInterval = endTime - startTime;
-
-                    for (i = 0; Data[i].STARTTIME - Data[0].STARTTIME < timeInterval; ++i) {
-                        currentEdges.push(edgeSourceTable[nodeTable[Data[i].SRCIP]][nodeTable[Data[i].DSTIP]]);
-                        currentNodes.push(nodeTable[Data[i].SRCIP]);
-                        currentNodes.push(nodeTable[Data[i].DSTIP]);
-                        var currentEdge = edges[edgeSourceTable[nodeTable[Data[i].SRCIP]][nodeTable[Data[i].DSTIP]]
-                        ];
-                        if (currentEdgeSourceTable[currentEdge.source] == null)
-                            currentEdgeSourceTable[currentEdge.source] = [];
-                        currentEdgeSourceTable[currentEdge.source][currentEdge.target] = currentEdge.id;
-
-                        if (currentEdgeTargetTable[currentEdge.target] == null)
-                            currentEdgeTargetTable[currentEdge.target] = [];
-                        currentEdgeTargetTable[currentEdge.target][currentEdge.source] = currentEdge.id;
-                    }
-
-                    lines = linksCanvas.selectAll(".link")
-                        .data(currentEdges.unique())
-                        .enter()
-                        .append("line")
-                        .attr("class", "link")
-                        .attr("x1", function (d, i) { return xScale(nodes[edges[d].source].x); })
-                        .attr("y1", function (d, i) { return yScale(nodes[edges[d].source].y); })
-                        .attr("x2", function (d, i) { return xScale(nodes[edges[d].target].x); })
-                        .attr("y2", function (d, i) { return yScale(nodes[edges[d].target].y); })
-                        .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
-                        .style("stroke", "rgb(0,0,0)");
-                    circles = nodesCanvas.selectAll(".node")
-                        .data(currentNodes.unique())
-                        .enter()
-                        .append("circle")
-                        .attr("class", "node")
-                        .attr("cx", function (d, i) { return xScale(nodes[d].x); })
-                        .attr("cy", function (d, i) { return yScale(nodes[d].y); })
-                        .attr("r", function (d, i) { return nodes[d].size / 2; })
-                        //.attr("r", 5)
-                        .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
-                        .attr("fill-opacity", 0.9 + 0.1 / 16 * scale)
-                        .style("fill",
-                        function (d, i) {
-                            return color(nodes[d].attributes.type2);
-                        })
-                        .style("stroke", "rgb(0,0,0)")
-                        .on("mouseover", mouseover)
-                        .on("mouseleave", mouseleave)
-                        .append("title")
-                        .text(function (d) { return nodes[d].label; });
+                    redrawNetwork(startTime, endTime);
 
 
                 });
