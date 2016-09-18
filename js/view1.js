@@ -37,7 +37,7 @@ function view1() {
     var maxY = 0;
     var minX = 0;
     var minY = 0;
-    var minTime = 1462238086;
+    var minTime = 0;
     var maxTime = minTime;
     var startTime = minTime;
     var endTime = minTime + 50;
@@ -457,13 +457,15 @@ function view1() {
                     data = Data;
                     var i = 0;
                     length = Data.length;
+                    minTime = parseInt(Data[0].RECEIVETIME);
                     for (i = 0; i < length; ++i) {
                         Data[i].ID = parseInt(Data[i].ID);
                         Data[i].STARTTIME = parseInt(Data[i]
                             .RECEIVETIME); //Date.parse(new Date(data[i].STARTTIME)) / 1000;
                         if (Data[i].STARTTIME > maxTime) maxTime = Data[i].STARTTIME;
+                        if (Data[i].STARTTIME < minTime) minTime = Data[i].STARTTIME;
                     }
-
+                    startTime = minTime;
                     endTime = (maxTime - minTime) / 10 + minTime;
                     lastEndTime = endTime;
 

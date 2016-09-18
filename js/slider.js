@@ -1,7 +1,9 @@
 var slider = new Slider();
 
 function onSliderChange(start, end) {
+    console.log("start "+start+" end "+end);
     v1.fresh(start, end);
+    v3.fresh(start, end);
 }
 
 function Slider() {
@@ -11,7 +13,7 @@ function Slider() {
     var x = innerWidth * 0.05;
     var y = innerHeight - 120;
 
-    var minTime = 1462238086;
+    var minTime = 0;
     var maxTime = minTime;
     var startTime = minTime;
     var endTime = minTime + 50;
