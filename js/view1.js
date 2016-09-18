@@ -45,8 +45,7 @@ function view1() {
     var lastEndTime = 0;
     var transitions = 0;
 
-    var redrawNet = function () { };
-    this.fresh = redrawNet;
+    this.fresh = function () { };
 
     var currentEdges = [];
     var currentNodes = [];
@@ -70,7 +69,6 @@ function view1() {
         //svgG.selectAll(".node")
         //    .attr("stroke-opacity", 0.1)
         //    .attr("fill-opacity", 0.1);
-        console.log(d);
         svgG.selectAll(".link")
             .filter(function (n) {
                 if (currentEdgeSourceTable.hasOwnProperty(nodes[d].id)) {

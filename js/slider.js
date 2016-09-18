@@ -1,5 +1,9 @@
 var slider = new Slider();
 
+function onSliderChange(start, end) {
+    v1.fresh(start, end);
+}
+
 function Slider() {
     var svgSlider = d3.select(".sliderCanvas");
     var width = innerWidth * 0.9;
@@ -140,7 +144,7 @@ function Slider() {
             redraw();
 
         })
-        .on("dragend", function () { v1.fresh(startTime, endTime); });
+        .on("dragend", function () { onSliderChange(startTime, endTime); });
     sliderHandler = svgSlider.selectAll(".sliderHandler");
     sliderHandler.call(shDragListener);
 
@@ -170,7 +174,7 @@ function Slider() {
             redraw();
 
         })
-        .on("dragend", function () { v1.fresh(startTime, endTime); });
+        .on("dragend", function () { onSliderChange(startTime, endTime); });
     sliderMain = svgSlider.selectAll(".sliderMain");
     sliderMain.call(smDragListener);
 
