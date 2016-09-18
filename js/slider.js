@@ -1,5 +1,14 @@
 var slider = new Slider();
 
+function onSliderChange(start, end) {
+    start = Math.floor(start);
+    end = Math.floor(end);
+    console.log("start "+start+" end "+end);
+    v1.fresh(start, end);
+    v3.fresh(start - 1, end);
+    v2.select(start, end);
+}
+
 function Slider() {
     var svgSlider = d3.select(".sliderCanvas");
     var width = innerWidth * 0.9;
@@ -7,7 +16,7 @@ function Slider() {
     var x = innerWidth * 0.05;
     var y = innerHeight - 120;
 
-    var minTime = 1462238086;
+    var minTime = 0;
     var maxTime = minTime;
     var startTime = minTime;
     var endTime = minTime + 50;
@@ -140,7 +149,7 @@ function Slider() {
             redraw();
 
         })
-        .on("dragend", function () { v1.fresh(startTime, endTime); });
+        .on("dragend", function () { onSliderChange(startTime, endTime); });
     sliderHandler = svgSlider.selectAll(".sliderHandler");
     sliderHandler.call(shDragListener);
 
@@ -170,7 +179,7 @@ function Slider() {
             redraw();
 
         })
-        .on("dragend", function () { v1.fresh(startTime, endTime); });
+        .on("dragend", function () { onSliderChange(startTime, endTime); });
     sliderMain = svgSlider.selectAll(".sliderMain");
     sliderMain.call(smDragListener);
 

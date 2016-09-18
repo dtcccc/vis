@@ -15,7 +15,7 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
     this.port = []; //端口筛选值，[sport,dport]
     this.callback = [];
     var w = (innerWidth - (innerHeight - 100) / 2) * 0.9, //宽
-        h = innerHeight / 2 * 0.9 - 50, //长
+        h = innerHeight / 2 * 0.9 - 100, //长
         padding = w / 20, //边距
         i, j, value, chosen = [];
     this.svg = d3.select("#view21") //ip视图的svg
@@ -153,7 +153,7 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
                 d3.select(this).attr("r", 10);
             })
             .on("mouseout", function (d) {
-                d3.select(this).attr("r", 2);
+                d3.select(this).attr("r", 5);
                 var temp = [];
                 for (i = 0; i < that.now; ++i)temp.push(that.nows[i]);
                 if (!that.now) temp = [0];
@@ -198,7 +198,7 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
                 d3.select("#pnum").text(d.num);
             })
             .on("mouseout", function (d) {
-                d3.select(this).attr("r", 2);
+                d3.select(this).attr("r", 5);
                 d3.select("#sport").text(port.length ? port[0] : "sport");
                 d3.select("#dport").text(port.length ? port[1] : "dport");
                 d3.select("#pnum").text(portall);
