@@ -255,11 +255,13 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
         parse_data2(this, data);
         redraw(this);
     }
-    this.select = function (t1, t2, chosen) { //根据外部条件筛选数据，传入参数为起始时间，结束时间
+    this.select = function (t1, t2, chosen=[]) { //根据外部条件筛选数据，传入参数为起始时间，结束时间
         this.time1 = t1;
         this.time2 = t2;
         var i, j, t, vt, temp = [];//result=[]
-        for (i in this.dataset) {
+		var l=this.dataset.length;
+		if(!chosen.length)for(i=0;i<l;++i)chosen[i]=1;
+        for (i=0;i<l;++i) {
             if (!chosen[i]) continue;
             t = new Date(this.dataset[i].STARTTIME).getTime() / 1000;
             if (t <= this.time1 || t > this.time2) { chosen[i] = false; continue; }
