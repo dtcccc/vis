@@ -505,11 +505,11 @@ function view3() {
         var t;
         if (isNaN(data)) { //传入参数为ip
             t = d3.select(".i" + data)[0][0];
-            if (t) this.click(t);
+            if (t) this.onclick(t);
         }
         else { //传入参数为id
             t = d3.select(".id" + data)[0][0];
-            if (t) this.click(t);
+            if (t) this.onclick(t);
         }
     }
 

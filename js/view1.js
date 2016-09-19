@@ -23,7 +23,7 @@ function view1() {
         .attr("width", width * 3)
         .attr("height", height * 3)
         .style("fill", "rgb(222,222,222)")
-        .on("click", function() {
+        .on("click", function () {
             for (var d = 0; d < selectedNodes.length; ++d) selectedNodes[d] = 0;
             deselectAll();
         });
@@ -68,19 +68,20 @@ function view1() {
     var data;
 
     var selectedNodes = [];
+    this.selected = selectedNodes;
 
     function clickOnNode(d) {
         selectedNodes[d] = 1 - selectedNodes[d];
         showSelectedNodes();
     }
-
+    this.click = clickOnNode;
     function showSelectedNodes() {
         //svgG.selectAll(".link")
         //    .attr("stroke-opacity", 0.1);
         //svgG.selectAll(".node")
         //    .attr("stroke-opacity", 0.1)
         //    .attr("fill-opacity", 0.1);
-        deselectAll(); 
+        deselectAll();
         var nn;
         for (nn = 0; nn < selectedNodes.length; ++nn) {
             if (selectedNodes[nn] === 1) break;
@@ -111,7 +112,7 @@ function view1() {
             .filter(function (n) {
                 for (var d = 0; d < selectedNodes.length; ++d) {
                     if (selectedNodes[d] === 1) {
-                        if (((n === d) ||  
+                        if (((n === d) ||
                             (currentEdgeSourceTable.hasOwnProperty(d) && currentEdgeSourceTable[d].hasOwnProperty(n)) ||
                             (currentEdgeTargetTable.hasOwnProperty(d) && currentEdgeTargetTable[d].hasOwnProperty(n)))) return false;
                     }
@@ -123,7 +124,7 @@ function view1() {
             .attr("stroke-opacity", 0.1)
             .attr("fill-opacity", 0.1);
     }
-
+    this.show = showSelectedNodes;
 
     function deselectAll(d) {
         svgG.selectAll(".link")
@@ -136,7 +137,7 @@ function view1() {
             .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
             .attr("fill-opacity", 0.9 + 0.1 / 16 * scale);
     }
-
+    this.deselect = deselectAll;
     function redrawNetwork(start, end) {
         transitions = 0;
         startTime = start;
