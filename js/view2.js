@@ -115,7 +115,8 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
             portmax = 0,
             portmin = 10000,
             portall = 0;
-        d3.selectAll("circle").remove();
+        that.svg.selectAll("circle").remove();
+		that.svg1.selectAll("circle").remove();
 
         for (i in that.ipdata)
             for (j in that.ipdata[i]) {
