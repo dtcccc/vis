@@ -3,7 +3,7 @@ var slider = new Slider();
 function onSliderChange(start, end) {
     start = Math.floor(start);
     end = Math.floor(end);
-    console.log("start "+start+" end "+end);
+
     v1.fresh(start, end);
     v3.fresh(start - 1, end);
     v2.select(start, end);

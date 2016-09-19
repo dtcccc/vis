@@ -5,7 +5,7 @@ function view1() {
     var width, height;
 
     width = height = (innerHeight - 100) / 2 * 0.9;
-    
+
     var scale = 1;
 
     var color = d3.scale.category10();
@@ -22,7 +22,11 @@ function view1() {
         .attr("y", -height)
         .attr("width", width * 3)
         .attr("height", height * 3)
-        .style("fill", "rgb(222,222,222)");
+        .style("fill", "rgb(222,222,222)")
+        .on("click", function() {
+            for (var d = 0; d < selectedNodes.length; ++d) selectedNodes[d] = 0;
+            deselectAll();
+        });
     var linksCanvas = svgG.append("g");
     var nodesCanvas = svgG.append("g");
     // end
@@ -63,52 +67,72 @@ function view1() {
 
     var data;
 
-    function mouseover(d) {
+    var selectedNodes = [];
+
+    function clickOnNode(d) {
+        selectedNodes[d] = 1 - selectedNodes[d];
+        showSelectedNodes();
+    }
+
+    function showSelectedNodes() {
         //svgG.selectAll(".link")
         //    .attr("stroke-opacity", 0.1);
         //svgG.selectAll(".node")
         //    .attr("stroke-opacity", 0.1)
         //    .attr("fill-opacity", 0.1);
+        deselectAll(); 
+        var nn;
+        for (nn = 0; nn < selectedNodes.length; ++nn) {
+            if (selectedNodes[nn] === 1) break;
+        }
+        if (nn === selectedNodes.length) { return; }
+
         svgG.selectAll(".link")
             .filter(function (n) {
-                if (currentEdgeSourceTable.hasOwnProperty(nodes[d].id)) {
-                    var est = currentEdgeSourceTable[nodes[d].id];
-                    for (i in est) if (est.hasOwnProperty(i)) if (est[i] === n) return false;
-                }
-                if (currentEdgeTargetTable.hasOwnProperty(nodes[d].id)) {
-                    var ett = currentEdgeTargetTable[nodes[d].id];
-                    for (i in ett) if (ett.hasOwnProperty(i)) if (ett[i] === n) return false;
+                for (var d = 0; d < selectedNodes.length; ++d) {
+                    if (selectedNodes[d] === 1) {
+                        if (currentEdgeSourceTable.hasOwnProperty(nodes[d].id)) {
+                            var est = currentEdgeSourceTable[nodes[d].id];
+                            for (i in est) if (est.hasOwnProperty(i)) if (est[i] === n) return false;
+                        }
+                        if (currentEdgeTargetTable.hasOwnProperty(nodes[d].id)) {
+                            var ett = currentEdgeTargetTable[nodes[d].id];
+                            for (i in ett) if (ett.hasOwnProperty(i)) if (ett[i] === n) return false;
+                        }
+                    }
                 }
                 return true;
             })
-            .transition()
-            .duration(250)
+            //.transition()
+            //.duration(250)
             .attr("stroke-opacity", 0.1);
 
         svgG.selectAll(".node")
             .filter(function (n) {
-                return !((n === d) ||
-                    (currentEdgeSourceTable.hasOwnProperty(d) && currentEdgeSourceTable[d].hasOwnProperty(n)) ||
-                    (currentEdgeTargetTable.hasOwnProperty(d) && currentEdgeTargetTable[d].hasOwnProperty(n)));
+                for (var d = 0; d < selectedNodes.length; ++d) {
+                    if (selectedNodes[d] === 1) {
+                        if (((n === d) ||  
+                            (currentEdgeSourceTable.hasOwnProperty(d) && currentEdgeSourceTable[d].hasOwnProperty(n)) ||
+                            (currentEdgeTargetTable.hasOwnProperty(d) && currentEdgeTargetTable[d].hasOwnProperty(n)))) return false;
+                    }
+                }
+                return true;
             })
-            .transition()
-            .duration(250)
+            //.transition()
+            //.duration(250)
             .attr("stroke-opacity", 0.1)
             .attr("fill-opacity", 0.1);
     }
 
-    this.selectNode = mouseover;
-    this.deselectNode = mouseleave;
-    
 
-    function mouseleave(d) {
+    function deselectAll(d) {
         svgG.selectAll(".link")
-            .transition()
-            .duration(250)
+            //.transition()
+            //.duration(250)
             .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale);
         svgG.selectAll(".node")
-            .transition()
-            .duration(250)
+            //.transition()
+            //.duration(250)
             .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
             .attr("fill-opacity", 0.9 + 0.1 / 16 * scale);
     }
@@ -155,15 +179,6 @@ function view1() {
         var arrangeNodes = stoodNodes.concat(deletedNodes);
         var resultNodes = stoodNodes.concat(addedNodes);
 
-        //var previousTest = [0, 2, 3, 4, 6, 8];
-        //var currentTest = [1, 2, 3, 7, 5, 4];
-        //var stoodTest = intersection(previousTest, currentTest);
-        //var deletedTest = difference(previousTest, currentTest);
-        //var addedTest = difference(currentTest, previousTest);
-        //var arrangeTest = stoodTest.concat(deletedTest);
-        //var resultTest = stoodTest.concat(addedTest);
-
-
         // First, arrange the data set in order to keep the static data in front of the array.
         // No transition, since this is a work around.
         lines = linksCanvas.selectAll(".link").data(arrangeEdges);
@@ -191,8 +206,7 @@ function view1() {
                 return color(nodes[d].attributes.type2);
             })
             .style("stroke", "rgb(0,0,0)")
-            .on("mouseover", mouseover)
-            .on("mouseleave", mouseleave)
+            .on("click", clickOnNode)
             .select("title")
             .text(function (d) { return nodes[d].label; });
         sleep(10);
@@ -244,8 +258,7 @@ function view1() {
                 .attr("stroke-width", 1 / scale)
                 .style("stroke", "rgb(0,0,0)");
             circles
-                .on("mouseover", mouseover)
-                .on("mouseleave", mouseleave)
+                .on("click", clickOnNode)
                 .append("title")
                 .text(function (d) { return nodes[d].label; });
         }
@@ -311,8 +324,7 @@ function view1() {
                         .attr("stroke-width", 1 / scale)
                         .style("stroke", "rgb(0,0,0)");
                     circles
-                        .on("mouseover", mouseover)
-                        .on("mouseleave", mouseleave)
+                        .on("click", clickOnNode)
                         .append("title")
                         .text(function (d) { return nodes[d].label; });
 
@@ -381,8 +393,7 @@ function view1() {
                         .attr("stroke-width", 1 / scale)
                         .style("stroke", "rgb(0,0,0)");
                     circles
-                        .on("mouseover", mouseover)
-                        .on("mouseleave", mouseleave)
+                        .on("click", clickOnNode)
                         .append("title")
                         .text(function (d) { return nodes[d].label; });
                 }
@@ -400,12 +411,12 @@ function view1() {
 
         nodesCanvas.selectAll(".node")
             .attr("r", function (d, i) { return nodes[d].size / 2 / d3.event.scale; })
-            .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
-            .attr("fill-opacity", 0.9 + 0.1 / 16 * scale)
+            //.attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
+            //.attr("fill-opacity", 0.9 + 0.1 / 16 * scale)
             .attr("stroke-width", 1 / d3.event.scale);
 
         linksCanvas.selectAll(".link")
-            .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
+            //.attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
             .attr("stroke-width", 1 / d3.event.scale);
 
 
@@ -442,6 +453,7 @@ function view1() {
                 if (node.x > maxX) maxX = node.x;
                 if (node.y < minY) minY = node.y;
                 if (node.y > maxY) maxY = node.y;
+                selectedNodes[node.id] = 0;
             }
 
             xScale = d3.scale.linear()
