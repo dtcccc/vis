@@ -264,7 +264,7 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
 		if(!chosen.length)for(i=0;i<l;++i)chosen[i]=1;
         for (i=0;i<l;++i) {
             if (!chosen[i]) continue;
-            t = new Date(this.dataset[i].STARTTIME).getTime() / 1000;
+            t = this.dataset[i].RECEIVETIME;
             if (t <= this.time1 || t > this.time2) { chosen[i] = false; continue; }
             if (this.port.length && !(this.dataset[i].SRCPORT == this.port[0] && this.dataset[i].DSTPORT == this.port[1])) { chosen[i] = false; continue; }
             temp = [];
