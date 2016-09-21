@@ -190,7 +190,8 @@ function view3() {
         if (chosen.length) this.chosen = chosen;
         this.time.setTime(this.end * 1000);
         jg = (this.end - this.start) / 9 * 1000;
-        for (this.pt = 0; this.pt < 200; ++this.pt) {
+		l = this.dataset.length;
+        for (this.pt = 0; this.pt < l; ++this.pt) {
             if (!this.chosen[this.pt]) continue;
             temp = new Date(this.dataset[this.pt]["time"] * 1000);
             if (temp <= this.time && temp > this.time - jg) {
@@ -258,10 +259,13 @@ function view3() {
                         al = 2;
                         c = 2;
                         break;
-                    default:
+                    case "57":
                         ast = 99;
                         al = 2;
                         c = 5;
+						break;
+					default:
+						continue;
                 }
                 for (j = 0; j < al; ++j)arr[j] = j + ast;
                 arr.sort(function () { return 0.5 - Math.random() });
@@ -300,7 +304,6 @@ function view3() {
                     if (this.data[i][t]["protocol"] != this.showtable[i][k]) continue;
                     temp = new Date(this.data[i][t]["time"] * 1000);
                     num = Math.floor((this.time - temp) / jg);
-                    //console.log(num,i,t);
                     this.cirdata[j][num].push(this.data[i][t]);
                     d3.select(".c" + j + ".d" + (num + 1))
                         .classed("light", true)
