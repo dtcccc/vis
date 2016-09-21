@@ -13,7 +13,7 @@ function view2(data) { //封装的question2类，初始化时传递的参数为�
     this.time1 = 1462238084; //时间筛选起始值
     this.time2 = 1462238089; //时间筛选结束值
     this.port = []; //端口筛选值，[sport,dport]
-    this.callback = [];
+    this.callback = [v2Select];
     var w = (innerWidth - (innerHeight - 100) / 2) * 0.9, //宽
         h = innerHeight / 2 * 0.9 - 100, //长
         padding = w / 20, //边距

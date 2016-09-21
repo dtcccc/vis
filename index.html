@@ -97,7 +97,41 @@
     <script src="js/view3.js" charset="utf-8"></script>
 
     <script>
-        v3.setcallback([v1.click], [v1.click], [function(){}], [function(){}]);
+        //v3.setcallback([v1.otherCall], [v1.otherCall], [function(){}], [function(){}]);
+
+        function v1Select() {
+            var chosen = [];
+            var i = 0;
+            for (i = 0; i < v1.selected.length; ++i)
+                chosen[i] = v1.selected[i];
+            for (i = 0; i < chosen.length; ++i)
+                if (chosen[i]) break;
+            if (i === chosen.length)
+                for (i = 0; i < chosen.length; ++i)
+                    chosen[i] = true;
+            v2.select(currentStartTime, currentEndTime, chosen);
+            v3.fresh(currentStartTime, currentEndTime, chosen);
+        }
+
+        function v2Select(chosen) {
+            v1.otherCall(chosen);
+            v3.fresh(currentStartTime, currentEndTime, chosen);
+        }
+
+        function v3MouseClick(chosen) {
+            console.log(chosen);
+            var selected = [];
+            var i = 0;
+            for (i = 0; i < v1.selected.length; ++i)
+                selected[i] = v1.selected[i];
+
+
+            console.log(selected);
+            v2.select(currentStartTime, currentEndTime, selected);
+        }
+
+
+        v3.setcallback([v1.otherCall], [v1.otherCall], [v1.otherCall, v3MouseClick], []);
     </script>
 
 </body>

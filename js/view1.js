@@ -24,8 +24,10 @@ function view1() {
         .attr("height", height * 3)
         .style("fill", "rgb(222,222,222)")
         .on("click", function () {
-            for (var d = 0; d < selectedNodes.length; ++d) selectedNodes[d] = 0;
+            for (var d = 0; d < selectedNodes.length; ++d) selectedNodes[d] = false;
+            for (var d = 0; d < selectedData.length; ++d) selectedData[d] = false;
             deselectAll();
+            v1Select();
         });
     var linksCanvas = svgG.append("g");
     var nodesCanvas = svgG.append("g");
@@ -68,38 +70,64 @@ function view1() {
     var data;
 
     var selectedNodes = [];
-    this.selected = selectedNodes;
+    var selectedData = [];
+    this.selected = selectedData;
 
     function clickOnNode(d) {
-        selectedNodes[d] = 1 - selectedNodes[d];
+        selectedNodes[d] = !selectedNodes[d];
         showSelectedNodes();
     }
-    this.click = clickOnNode;
-    function showSelectedNodes() {
-        //svgG.selectAll(".link")
-        //    .attr("stroke-opacity", 0.1);
-        //svgG.selectAll(".node")
-        //    .attr("stroke-opacity", 0.1)
-        //    .attr("fill-opacity", 0.1);
+    this.otherCall = choseAnData;
+
+    function setSelectedData(data) {
+        if (data.length === selectedData.length)
+            for (var i = 0; i < data.length; ++i)
+                selectedData[i] = data[i];
+        showSelectedData();
+    }
+
+    function choseAnData(d) {
+        if (typeof (d) === "object") {
+            setSelectedData(d);
+        }
+        else {
+            selectedData[d] = !selectedData[d];
+            showSelectedData();
+
+        }
+    }
+
+    function showSelectedData() {
         deselectAll();
         var nn;
-        for (nn = 0; nn < selectedNodes.length; ++nn) {
-            if (selectedNodes[nn] === 1) break;
+        for (nn = 0; nn < selectedData.length; ++nn) {
+            if (selectedData[nn]) break;
         }
-        if (nn === selectedNodes.length) { return; }
+        if (nn === selectedNodes.length) { 
+            for (var i = 0; i < selectedNodes.length; ++i) selectedNodes[i] = false;
+            return;
+        }
+
+        var nodesOfData = [];
+        var edgesOfData = [];
+        for (nn = 0; nn < selectedData.length; ++nn) {
+            if (selectedData[nn]) {
+                var sourceId = nodeTable[data[nn].SRCIP];
+                var targetId = nodeTable[data[nn].DSTIP];
+                nodesOfData.push(sourceId);
+                nodesOfData.push(targetId);
+                edgesOfData.push(edgeSourceTable[sourceId][targetId]);
+            }
+        }
+
+        nodesOfData.unique();
+        edgesOfData.unique();
 
         svgG.selectAll(".link")
             .filter(function (n) {
-                for (var d = 0; d < selectedNodes.length; ++d) {
-                    if (selectedNodes[d] === 1) {
-                        if (currentEdgeSourceTable.hasOwnProperty(nodes[d].id)) {
-                            var est = currentEdgeSourceTable[nodes[d].id];
-                            for (i in est) if (est.hasOwnProperty(i)) if (est[i] === n) return false;
-                        }
-                        if (currentEdgeTargetTable.hasOwnProperty(nodes[d].id)) {
-                            var ett = currentEdgeTargetTable[nodes[d].id];
-                            for (i in ett) if (ett.hasOwnProperty(i)) if (ett[i] === n) return false;
-                        }
+                for (var d = 0; d < edgesOfData.length; ++d) {
+                    if (edgesOfData[d] === n) {
+                        return false;
                     }
                 }
                 return true;
@@ -110,8 +138,53 @@ function view1() {
 
         svgG.selectAll(".node")
             .filter(function (n) {
+                for (var d = 0; d < nodesOfData.length; ++d) {
+                    if (n === nodesOfData[d]) return false;
+                }
+                return true;
+            })
+            //.transition()
+            //.duration(250)
+            .attr("stroke-opacity", 0.1)
+            .attr("fill-opacity", 0.1);
+    }
+
+    function showSelectedNodes() {
+        deselectAll();
+        var nn;
+        for (nn = 0; nn < selectedNodes.length; ++nn) {
+            if (selectedNodes[nn]) break;
+        }
+        if (nn === selectedNodes.length) {
+            for (var i = 0; i < selectedData.length; ++i) selectedData[i] = false;
+            return;
+        }
+
+        svgG.selectAll(".link")
+            .filter(function (n) {
                 for (var d = 0; d < selectedNodes.length; ++d) {
-                    if (selectedNodes[d] === 1) {
+                    if (selectedNodes[d]) {
+                        if (currentEdgeSourceTable.hasOwnProperty(nodes[d].id)) {
+                            var est = currentEdgeSourceTable[nodes[d].id];
+                            for (i in est) if (est.hasOwnProperty(i)) if (est[i] === n) { selectedData[n] = true; return false; }
+                        }
+                        if (currentEdgeTargetTable.hasOwnProperty(nodes[d].id)) {
+                            var ett = currentEdgeTargetTable[nodes[d].id];
+                            for (i in ett) if (ett.hasOwnProperty(i)) if (ett[i] === n) { selectedData[n] = true; return false; }
+                        }
+                    }
+                }
+
+                return true;
+            })
+            //.transition()
+            //.duration(250)
+            .attr("stroke-opacity", 0.1);
+
+        svgG.selectAll(".node")
+            .filter(function (n) {
+                for (var d = 0; d < selectedNodes.length; ++d) {
+                    if (selectedNodes[d]) {
                         if (((n === d) ||
                             (currentEdgeSourceTable.hasOwnProperty(d) && currentEdgeSourceTable[d].hasOwnProperty(n)) ||
                             (currentEdgeTargetTable.hasOwnProperty(d) && currentEdgeTargetTable[d].hasOwnProperty(n)))) return false;
@@ -123,10 +196,13 @@ function view1() {
             //.duration(250)
             .attr("stroke-opacity", 0.1)
             .attr("fill-opacity", 0.1);
+        v1Select();
     }
     this.show = showSelectedNodes;
 
     function deselectAll(d) {
+        //for (var i = 0; i < selectedNodes.length; ++i) selectedNodes[i] = false;
+        //for (var i = 0; i < selectedData.length; ++i) selectedData[i] = false;
         svgG.selectAll(".link")
             //.transition()
             //.duration(250)
@@ -136,6 +212,7 @@ function view1() {
             //.duration(250)
             .attr("stroke-opacity", 0.9 + 0.1 / 16 * scale)
             .attr("fill-opacity", 0.9 + 0.1 / 16 * scale);
+        //v1Select();
     }
     this.deselect = deselectAll;
     function redrawNetwork(start, end) {
@@ -454,7 +531,7 @@ function view1() {
                 if (node.x > maxX) maxX = node.x;
                 if (node.y < minY) minY = node.y;
                 if (node.y > maxY) maxY = node.y;
-                selectedNodes[node.id] = 0;
+                selectedNodes[node.id] = false;
             }
 
             xScale = d3.scale.linear()
@@ -477,6 +554,7 @@ function view1() {
                             .RECEIVETIME); //Date.parse(new Date(data[i].STARTTIME)) / 1000;
                         if (Data[i].STARTTIME > maxTime) maxTime = Data[i].STARTTIME;
                         if (Data[i].STARTTIME < minTime) minTime = Data[i].STARTTIME;
+                        selectedData[i] = false;
                     }
                     startTime = minTime;
                     endTime = (maxTime - minTime) / 10 + minTime;

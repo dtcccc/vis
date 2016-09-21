@@ -474,7 +474,7 @@ function view3() {
             d3.selectAll(".light.select").style("opacity", 1);
         }
         else d3.selectAll(".light").style("opacity", 1);
-        this.overback.map(function (i) { i(result) });
+        this.clickback.map(function (i) { i(result) });
     }
 
     this._over = function (data) { //联动函数

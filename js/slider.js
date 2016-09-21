@@ -1,8 +1,13 @@
 var slider = new Slider();
+var currentStartTime = 0;
+var currentEndTime = 0;
 
 function onSliderChange(start, end) {
     start = Math.floor(start);
     end = Math.floor(end);
+
+    currentStartTime = start;
+    currentEndTime = end;
 
     v1.fresh(start, end);
     v3.fresh(start - 1, end);
@@ -28,6 +33,8 @@ function Slider() {
         maxTime = max;
         startTime = start;
         endTime = end;
+        currentStartTime = start;
+        currentEndTime = end;
 
         sliderScale = d3.scale.linear()
             .domain([minTime, maxTime])
