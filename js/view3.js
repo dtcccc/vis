@@ -168,7 +168,7 @@ function view3() {
         //d3.select("#time").text(that.time);
     }
     this.fresh = function (start = 0, end = 0, chosen = []) { //接收参数，刷新图像
-        var temp, i, j, t, jg, l;
+        var temp, i, j, t, jg, l,n=0;
         this.showtable = {}; //初始化显示列表
         this.cirdata = [];
         d3.select(".line").remove(); //清除前一次
@@ -191,6 +191,9 @@ function view3() {
         this.time.setTime(this.end * 1000);
         jg = (this.end - this.start) / 9 * 1000;
 		l = this.dataset.length;
+		for(i=0;i<l;++i)
+			if(this.chosen[i]) ++n;
+		if(n<50) jg = (this.end - this.start) * 1000;
         for (this.pt = 0; this.pt < l; ++this.pt) {
             if (!this.chosen[this.pt]) continue;
             temp = new Date(this.dataset[this.pt]["time"] * 1000);
