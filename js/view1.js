@@ -103,7 +103,7 @@ function view1() {
         for (nn = 0; nn < selectedData.length; ++nn) {
             if (selectedData[nn]) break;
         }
-        if (nn === selectedNodes.length) { 
+        if (nn === selectedData.length) { 
             for (var i = 0; i < selectedNodes.length; ++i) selectedNodes[i] = false;
             return;
         }
@@ -561,10 +561,6 @@ function view1() {
                     lastEndTime = endTime;
 
                     slider.SetTime(minTime, maxTime, startTime, endTime);
-
-                    redrawNetwork(startTime, endTime);
-
-
                 });
 
         });

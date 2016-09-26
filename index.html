@@ -42,6 +42,10 @@
         <svg class="sliderCanvas" style="position: absolute;">
             <rect class="slider" x="20" y="20" width="760" height="60" style="stroke: #000000; fill: #ffffff"></rect>
         </svg>
+        <div id="controls">
+            <button type="button" class="Play">Play</button>
+            <button type="button" class="Stop">Stop</button>
+        </div>
     </div>
 
     <div id="view1" style="position: absolute;">
@@ -109,8 +113,12 @@
             if (i === chosen.length)
                 for (i = 0; i < chosen.length; ++i)
                     chosen[i] = true;
+            var numberC = [];
+            for (i = 0; i < chosen.length; ++i)
+                if (chosen[i]) numberC[i] = 1;
+                else numberC[i] = 0;
             v2.select(currentStartTime, currentEndTime, chosen);
-            v3.fresh(currentStartTime, currentEndTime, chosen);
+            v3.fresh(currentStartTime, currentEndTime, numberC);
         }
 
         function v2Select(chosen) {
@@ -119,19 +127,16 @@
         }
 
         function v3MouseClick(chosen) {
-            console.log(chosen);
             var selected = [];
             var i = 0;
             for (i = 0; i < v1.selected.length; ++i)
                 selected[i] = v1.selected[i];
 
-
-            console.log(selected);
             v2.select(currentStartTime, currentEndTime, selected);
         }
 
 
-        v3.setcallback([v1.otherCall], [v1.otherCall], [v1.otherCall, v3MouseClick], []);
+        v3.setcallback([v1.otherCall], [v1.otherCall], [v1.otherCall, v3MouseClick], [v1.otherCall, v3MouseClick]);
     </script>
 
 </body>

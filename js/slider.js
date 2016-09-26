@@ -9,16 +9,21 @@ function onSliderChange(start, end) {
     currentStartTime = start;
     currentEndTime = end;
 
-    v1.fresh(start, end);
-    v3.fresh(start - 1, end);
-    v2.select(start, end);
+    var alltrue = [];
+    var allfalse = [];
+    for (var i = 0; i < v1.selected.length; ++i) alltrue[i] = true;
+    for (var i = 0; i < v1.selected.length; ++i) allfalse[i] = false;
+
+    v1.fresh(start, end, allfalse);
+    v2.select(start, end, alltrue);
+    v3.fresh(start - 1, end, alltrue);
 }
 
 function Slider() {
     var svgSlider = d3.select(".sliderCanvas");
-    var width = innerWidth * 0.9;
+    var width = innerWidth * 0.9 - 150;
     var height = 100;
-    var x = innerWidth * 0.05;
+    var x = innerWidth * 0.05 + 150;
     var y = innerHeight - 120;
 
     var minTime = 0;
@@ -41,6 +46,46 @@ function Slider() {
             .range([20, width - 20]);
 
         this.Redraw();
+    }
+
+    function changeTime(start, end) {
+        startTime = start < minTime ? minTime : start;
+        endTime = end > maxTime ? maxTime : end;
+        redraw();
+        onSliderChange(startTime, endTime);
+    }
+    this.change = changeTime;
+
+    var controls = d3.select("#controls");
+    var play = controls.select(".Play");
+    play.style("position", "absolute")
+        .style("left", x - 150 + "px")
+        .style("top", y + 40 + "px");
+    play.on("click", playTime);
+    var stop = controls.select(".Stop");
+    stop.style("position", "absolute")
+        .style("left", x - 100 + "px")
+        .style("top", y + 40 + "px");
+    stop.on("click", stopTime);
+    var interval;
+    function playTime() {
+        stopTime();
+        interval = setInterval(function () { timeShiftRight(); redraw(); }, 1200);
+    }
+    function stopTime() {
+        clearInterval(interval);
+        interval = 0;
+    }
+    function timeShiftRight() {
+        var timeInterval = endTime - startTime;
+        endTime += timeInterval / 10;
+        startTime += timeInterval / 10;
+        if (endTime > maxTime) {
+            endTime = maxTime;
+            startTime = endTime - timeInterval;
+            stopTime();
+        }
+        changeTime(startTime, endTime);
     }
 
 
