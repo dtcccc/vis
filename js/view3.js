@@ -103,7 +103,7 @@ function view3() {
             .style("stroke", "#000")
             .style("fill", "#fff")
             .attr("class", function (d, i) {
-                var str = (i <= 54 * 9 ? "IPv6-ICMP" : i <= 84 * 9 ? "XTP" : i <= 92 * 9 ? "3PC" : i <= 94 * 9 ? "IP" : i <= 96 * 9 ? "MUX" : i <= 98 * 9 ? "SEP" : "SKIP");
+                var str = (i <= 54 * 9 ? "HTTP" : i <= 84 * 9 ? "UDP" : i <= 92 * 9 ? "TCP" : i <= 94 * 9 ? "SMB" : i <= 96 * 9 ? "ARP" : i <= 98 * 9 ? "ICMP" : "SNMP");
                 str += " c";
                 var tt = d;
                 while (tt.name == undefined) tt = tt.parent;
@@ -118,7 +118,7 @@ function view3() {
     function draw_big_circle(that) { //画出最外圈，用于标识
         var pie = d3.layout.pie(),
             piedata = pie([2, 2, 2, 8, 30, 2, 54]),
-            text = ["IP", "MUX", "SEP", "3PC", "XTP", "SKIP", "IPv6-ICMP"],
+            text = ["SMB", "ARP", "ICMP", "TCP", "UDP", "SNMP", "HTTP"],
             arc = d3.svg.arc()  //弧生成器
                 .innerRadius(that.height * 0.45)   //设置内半径
                 .outerRadius(that.height * 0.5),  //设置外半径
